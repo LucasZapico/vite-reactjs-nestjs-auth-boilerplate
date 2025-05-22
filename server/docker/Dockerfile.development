@@ -1,0 +1,47 @@
+# Dockerfile for expressjs bluemonkeymakes-boilerplate server v1
+FROM node:22-alpine
+USER root
+
+# Set the working directory
+WORKDIR /app
+
+# Install necessary packages
+RUN apk update && apk add --no-cache libc6-compat
+
+
+# RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
+# Enable corepack and prepare pnpm
+RUN corepack enable pnpm
+RUN corepack prepare pnpm@latest --activate
+RUN corepack use pnpm@latest
+
+# Copy package.json and pnpm-lock.yaml
+COPY --chown=root:root  package.json ./
+
+
+
+# # Install dependencies
+RUN pnpm install
+
+# Copy the rest of the application code
+COPY --chown=root:root . .
+
+# Generate Prisma Client in Docker
+RUN npx prisma generate
+
+# Expose the port the app runs on
+EXPOSE 6131
+
+# Define the command to run the application
+CMD ["pnpm", "run", "start:migrate:dev"]
+
+
+####
+## // create image
+##  docker buildx build --file ./docker/Dockerfile.development --tag expressjs/bluemonkeymakes-boilerplate:latest --label note="node22,expressjs,pnpm" .
+## // create container
+## docker create --name bluemonkeymakes-boilerplate-server1 -p 3330:3330  expressjs/bluemonkeymakes-boilerplate
+## docker run -it expressjs/bluemonkeymakes-boilerplate /bin/sh
+## // run/start container
+## docker start server-bluemonkeymakes-boilerplatev1
+###

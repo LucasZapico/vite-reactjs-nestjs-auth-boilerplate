@@ -1,0 +1,67 @@
+# bluemonkeymakes-boilerplate server v1.0 docker compose
+services:
+  nestjs-bluemonkeymakes-boilerplate-dev: # this container name is overrun by config
+    image: $DOCKER_IMAGE_NAME
+    container_name: $DOCKER_CONTAINER_NAME
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile.development
+    ports:
+      - '${PORT}:${PORT}'
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app/
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
+
+    environment:
+      - NODE_ENV=development
+      - HOSTNAME=${HOSTNAME}
+      - BASE_URL=${BASE_URL}
+      - PORT=${PORT}
+      - SERVER_SECRET=${SERVER_SECRET}
+      - API_VERSION=${API_VERSION}
+    networks:
+      - bluemonkeymakes-boilerplate-network
+    depends_on:
+      - db-development
+    
+  db-development:
+    image: postgres:13.3
+    container_name: bluemonkeymakes-boilerplate-postgres-development
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5532:5432"
+    volumes:
+      - bluemonkeymakes-boilerplate-db:/var/lib/postgresql/data
+    networks:
+      - bluemonkeymakes-boilerplate-network
+    restart: unless-stopped
+
+volumes:
+  bluemonkeymakes-boilerplate-db:
+
+networks:
+  bluemonkeymakes-boilerplate-network:
+    driver: bridge
+
+
+##
+### build
+## docker compose --env-file ./src/env/.env.development --file ./src/docker/docker-compose.development.yaml  build --no-cache
+##
+### build and server
+## docker compose  --env-file ./src/env/.env.development --file ./src/docker/docker-compose.development.yaml  up --build -d
+##
+### fresh build and server and image no deps
+## docker compose --env-file ./env/.env.development --file ./docker/docker-compose.development.yaml  up --build --force-recreate --no-deps
+### up and watch
+## docker compose --env-file ./env/.env.development --file ./docker/docker-compose.development.yaml  up --watch

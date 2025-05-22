@@ -1,0 +1,38 @@
+# "PRODUCTION bluemonkeymakes-boilerplate server v1.0 docker compose
+services:
+  expressjs-bluemonkeymakes-boilerplate-prod: # this container name is overrun by config
+    image: $DOCKER_IMAGE_NAME
+    container_name: $DOCKER_CONTAINER_NAME
+
+    build:
+      context: ../..
+      dockerfile: ./src/docker/Dockerfile.production
+    ports:
+      - '${PORT}:${PORT}'
+
+    environment:
+      - NODE_ENV=${ENV}
+      - TWENTY_API_KEY=${TWENTY_API_KEY}
+      - TWENTY_API_URL=${TWENTY_API_URL}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - CLIENT_API_KEY=${CLIENT_API_KEY}
+      - CLIENT_URL=${CLIENT_URL}
+      - HOSTNAME=${HOSTNAME}
+      - BASE_URL=${BASE_URL}
+      - PORT=${PORT}
+      - SERVER_SECRET=${SERVER_SECRET}
+      - API_VERSION=${API_VERSION}
+
+
+
+##
+### build
+## docker compose --env-file ./src/env/.env.production --file ./src/docker/docker-compose.production.yaml  build --no-cache
+##
+### build and server
+## docker compose --env-file ./env/.env.production --file ./docker/docker-compose.production.yaml  up --build -d
+##
+### fresh build and server and image no deps
+## docker compose --env-file ./env/.env.production --file ./docker/docker-compose.production.yaml  up --build --force-recreate --no-deps
+### up and watch
+## docker compose --env-file ./env/.env.production --file ./docker/docker-compose.production.yaml  up --watch
