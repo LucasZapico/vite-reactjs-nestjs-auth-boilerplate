@@ -1,4 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 
 @Controller('auth')
-export class AuthController {}
+export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+    constructor(){
+
+    }
+}

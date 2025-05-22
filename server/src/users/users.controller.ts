@@ -1,4 +1,6 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 
 @Controller('users')
-export class UsersController {}
+export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+}
