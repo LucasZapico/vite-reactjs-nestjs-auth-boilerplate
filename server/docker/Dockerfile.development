@@ -1,4 +1,4 @@
-# Dockerfile for expressjs bluemonkeymakes-boilerplate server v1
+# Dockerfile for nestjs bluemonkeymakes-boilerplate server v1
 FROM node:22-alpine
 USER root
 
@@ -38,10 +38,10 @@ CMD ["pnpm", "run", "start:migrate:dev"]
 
 ####
 ## // create image
-##  docker buildx build --file ./docker/Dockerfile.development --tag expressjs/bluemonkeymakes-boilerplate:latest --label note="node22,expressjs,pnpm" .
+##  docker buildx build --file ./docker/Dockerfile.development --tag nestjs/bluemonkeymakes-boilerplate:latest --label note="node22,nestjs,pnpm" .
 ## // create container
-## docker create --name bluemonkeymakes-boilerplate-server1 -p 3330:3330  expressjs/bluemonkeymakes-boilerplate
-## docker run -it expressjs/bluemonkeymakes-boilerplate /bin/sh
+## docker create --name bluemonkeymakes-boilerplate-server1 -p 3330:3330  nestjs/bluemonkeymakes-boilerplate
+## docker run -it nestjs/bluemonkeymakes-boilerplate /bin/sh
 ## // run/start container
 ## docker start server-bluemonkeymakes-boilerplatev1
 ###

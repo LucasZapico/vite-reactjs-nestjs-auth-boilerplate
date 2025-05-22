@@ -1,6 +1,6 @@
 # "PRODUCTION bluemonkeymakes-boilerplate server v1.0 docker compose
 services:
-  expressjs-bluemonkeymakes-boilerplate-prod: # this container name is overrun by config
+  nestjs-bluemonkeymakes-boilerplate-prod: # this container name is overrun by config
     image: $DOCKER_IMAGE_NAME
     container_name: $DOCKER_CONTAINER_NAME
 
