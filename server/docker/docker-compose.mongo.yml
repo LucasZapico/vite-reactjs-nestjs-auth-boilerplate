@@ -1,0 +1,27 @@
+services:
+  mongo-db:
+    image: mongo:4.4
+    container_name: bluemonkeymakes-boilerplate-mongo-$NODE_ENV
+    ports:
+      - "38017:27017"
+    volumes:
+      - bluemonkeymakes-boilerplate-mongo-db:/data/db
+    networks:
+      - bluemonkeymakes-boilerplate-network
+    restart: unless-stopped
+    environment:
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+volumes:
+  bluemonkeymakes-boilerplate-mongo-db:
+
+
+networks:
+  bluemonkeymakes-boilerplate-network:
+    driver: bridge
+
+    
