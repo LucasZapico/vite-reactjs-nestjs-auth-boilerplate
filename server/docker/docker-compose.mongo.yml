@@ -3,7 +3,7 @@ services:
     image: mongo:4.4
     container_name: bluemonkeymakes-boilerplate-mongo-$NODE_ENV
     ports:
-      - "38017:27017"
+      - '${MONGO_PORT}:27017'
     volumes:
       - bluemonkeymakes-boilerplate-mongo-db:/data/db
     networks:

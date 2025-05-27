@@ -1,0 +1,22 @@
+services:
+  image: postgres:13.3
+  container_name: bluemonkeymakes-boilerplate-postgres-$NODE_ENV
+  environment:
+    POSTGRES_USER: ${DATABASE_USER}
+    POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    POSTGRES_DB: ${DATABASE_NAME}
+  ports:
+    - "6632:5432"
+  volumes:
+    - bluemonkeymakes-boilerplate-db:/var/lib/postgresql/data
+  networks:
+    - bluemonkeymakes-boilerplate-network
+  restart: unless-stopped
+
+volumes:
+  bluemonkeymakes-boilerplate-db:
+
+
+networks:
+  bluemonkeymakes-boilerplate-network:
+    driver: bridge
