@@ -1,0 +1,89 @@
+# task fille for BHRECo service one
+version: '3'
+
+
+
+dotenv:
+  ## TODO: doesnt work as expect
+  # - env/.env.{{.ENV}}
+  # - env/.env.staging
+  # - env/.env.production
+  - env/.env.development
+
+tasks:
+  hello:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+  check:
+    - echo "Arg {{.ARGS}}"
+  check-env:
+    cmds:
+      - echo $PORT
+      - echo $HOSTNAME
+      - echo $HOST
+      - echo $HOST_USER
+      - echo $ENV
+      - echo $SOURCE
+      - echo $DOCKER_CONTAINER_NAME
+      - echo $DOCKER_IMAGE_NAME
+    silent: true
+  
+  ###
+  # Teardown actions
+  ###
+  # stop container 
+  stop-docker-container: 
+    cmds:
+      - ssh $HOST_USER@$HOST "docker stop $DOCKER_CONTAINER_NAME"
+  # remove container 
+  remove-docker-container: 
+    cmds:
+      - ssh $HOST_USER@$HOST "docker rm $DOCKER_CONTAINER_NAME"
+  # remove image
+  remove-docker-image: 
+    cmds:
+      - ssh $HOST_USER@$HOST "docker rmi $DOCKER_IMAGE_NAME"
+  teardown:
+    cmds: 
+    - task: stop-docker-container
+    - task: remove-docker-container
+    - task: remove-docker-image 
+  remove-all-files:
+    cmds:
+      - ssh $HOST_USER@$HOST "rm -rf $SOURCE"
+  teardown-hard:
+    cmds:
+      - task: teardown
+      - task: remove-all-files
+  ####
+  # spinup actions 
+  ####
+  # push to server
+  push-to-server:
+    cmds:
+      - rsync -avz --exclude-from=.gitignore --exclude=.git . $HOST_USER@$HOST:$SOURCE
+
+  push-to-server-all:
+    cmds:
+      - rsync -avz --exclude=.git . $HOST_USER@$HOST:$SOURCE
+  server-up:
+    cmds:
+      - ssh $HOST_USER@$HOST "cd $SOURCE; docker compose --env-file ./env/.env.$ENV --file ./docker/docker-compose.$ENV.yml up --build -d"
+  spinup:
+    cmds:
+      - task: push-to-server
+      - task: server-up
+  ## docker commands 
+  docker-compose-upbuild:
+    cmds:
+      - docker compose --env-file ./env/.env.$ENV --file ./docker/docker-compose.$ENV.yml up --build -d
+
+  ## spin up stand alone postgres db for local development without dockerized app
+  docker-compose-db-pg:
+    cmds: 
+      - docker compose --env-file ./env/.env.$ENV --file ./docker/docker-compose.postgres.yml up --build -d db-postgres
+
+  docker-compose-db-mongo:
+    cmds: 
+      - docker compose --env-file ./env/.env.$ENV --file ./docker/docker-compose.mongo.yml up --build -d 
