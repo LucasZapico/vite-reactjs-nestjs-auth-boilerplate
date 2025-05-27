@@ -1,18 +1,61 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UsersService } from "./users.service";
+import { Model } from "mongoose";
+import { getModelToken } from "@nestjs/mongoose";
+import { UserRole } from "./dto/user.dto";
 
-describe('UsersService', () => {
-  let service: UsersService;
+// const mockUserModel = {
+//   findOne: jest.fn(),
+//   save: jest.fn(),
+//   // For `new this.userModel(userDto)` to work, mock as a constructor
+//   prototype: {
+//     save: jest.fn(),
+//   },
+// };
+
+describe("UsersService", () => {
+  let userService: UsersService;
+   const mockUserModel: jest.Mock = jest.fn();
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
+      providers: [
+        {
+          provide: getModelToken("User"),
+          useValue: mockUserModel,
+        },
+        UsersService,
+      ],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    userService = module.get<UsersService>(UsersService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+   afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should be defined", () => {
+    expect(userService).toBeDefined();
+  });
+
+  it("create user", async () => {
+    let userDto = {
+      username: "testuser",
+      email: "testuser987@example.com",
+      password: "test987",
+      role: UserRole.USER,
+    };
+       mockUserModel.mockImplementation(() => ({
+      save: jest.fn().mockResolvedValue(userDto),
+      toObject: jest.fn().mockReturnValue(userDto),
+    }));
+
+    const result = await userService.createUser(userDto);
+    expect(mockUserModel).toHaveBeenCalledWith(userDto); 
+    
+    expect(result).toEqual(userDto);
+    
   });
 });
