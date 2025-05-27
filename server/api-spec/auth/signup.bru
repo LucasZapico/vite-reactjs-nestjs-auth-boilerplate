@@ -4,8 +4,17 @@ meta {
   seq: 1
 }
 
-get {
-  url: {{BASE_URL}}
-  body: none
+post {
+  url: {{BASE_URL}}/users/signup
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "username": "testuser",
+     "email": "testuser985@example.com",
+    "password": "test985",
+    "role": "ADMIN"
+  }
 }
