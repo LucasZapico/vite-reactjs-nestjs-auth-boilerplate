@@ -3,6 +3,7 @@ import { UsersService } from "./users.service";
 import { Model } from "mongoose";
 import { getModelToken } from "@nestjs/mongoose";
 import { UserRole } from "./dto/user.dto";
+import { JwtModule, JwtService } from "@nestjs/jwt";
 
 // const mockUserModel = {
 //   findOne: jest.fn(),
@@ -20,12 +21,14 @@ describe("UsersService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [JwtModule],
       providers: [
         {
           provide: getModelToken("User"),
           useValue: mockUserModel,
         },
         UsersService,
+        JwtService,
       ],
     }).compile();
 

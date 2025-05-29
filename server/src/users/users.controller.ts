@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Logger, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Logger, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { SignupDto, UserDto } from './dto/user.dto';
 
@@ -7,26 +7,19 @@ export class UsersController {
   private readonly logger = new Logger(UsersController.name);
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('signup')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  async signup(@Body() userDto: SignupDto) {
-    this.logger.log('User signed up');
-
-    const user = {
-      email: userDto.email,
-      password: userDto.password,
-      username: userDto.username,
-      role: userDto?.role || 'USER',
-    }
-
-    // Logic for user signup
-    return this.usersService.createUser(user);
+  @HttpCode(HttpStatus.OK)
+  @Post()
+  async getUsers(){
+    this.logger.log('Fetching all users');
+    // Logic for fetching all users
+    return "get all users";
   }
 
-  @Post('login')
-  async login() {
-    this.logger.log('User logged in');
-    // Logic for user login
+  @HttpCode(HttpStatus.OK)
+  @Post()
+  async getUser(@Body() userDto: UserDto) {
+    this.logger.log('User fetched', userDto);
+    return "get users"
   }
 
   @Delete('remove')

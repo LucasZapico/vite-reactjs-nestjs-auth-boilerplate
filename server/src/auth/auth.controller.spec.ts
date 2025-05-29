@@ -4,12 +4,14 @@ import { AuthService } from "./auth.service";
 import { UsersService } from "src/users/users.service";
 import { getModelToken } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { JwtModule } from "@nestjs/jwt";
 
 describe("AuthController", () => {
   let controller: AuthController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [JwtModule],  
       providers: [
         {
           provide: getModelToken("User"),

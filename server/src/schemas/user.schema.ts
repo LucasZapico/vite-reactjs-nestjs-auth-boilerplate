@@ -22,6 +22,22 @@ export class User {
 
   @Prop({required: true})
   role: UserRole
+
+  @Prop()
+  refreshToken?: string;
+
+  @Prop()
+  accessToken?: string;
+
+  @Prop({default: Date.now})
+  createdAt: Date;
+
+  @Prop({default: Date.now})
+  updatedAt: Date;
+
+  @Prop()
+  tags?: string[];
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -44,7 +44,9 @@ export class SignupDto extends BaseUserDto {
 
 }
 
-export class LoginDto extends BaseUserDto {}
+export class LoginDto extends BaseUserDto {
+
+}
 
 
 

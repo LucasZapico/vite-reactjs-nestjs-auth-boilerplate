@@ -72,6 +72,16 @@ export class UsersService {
     return foundUser;
   }
 
+  async updateUser({query, data}: {query: any, data: any}) {
+    this.logger.log("Updating user");
+    // Logic for updating user
+    const [updateUserError, updatedUser] = await goTry(() =>
+      this.userModel.findOneAndUpdate(query, data, ),
+    );
+  }
+
+
+
   // clear testing data 
    // clear test data
   @Cron(CronExpression.EVERY_5_MINUTES)
