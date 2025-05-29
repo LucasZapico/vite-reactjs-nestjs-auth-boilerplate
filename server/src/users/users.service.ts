@@ -69,6 +69,7 @@ export class UsersService {
       this.logger.error("Error finding user", findUserError);
       throw new AppError("Error finding user", 400);
     }
+    this.logger.log("User found", foundUser);
     return foundUser;
   }
 
@@ -80,11 +81,29 @@ export class UsersService {
     );
   }
 
+   async remove(id: string) {
+    return this.userModel.findByIdAndDelete(id).exec();
+  }
+
+  async getUsers(data: any) {
+    this.logger.log("Fetching users");
+    const [getUsersError, users] = await goTry(() =>
+      this.userModel.find(data).exec(),
+    );
+    if (getUsersError) {
+      this.logger.error("Error fetching users", getUsersError);
+      throw new AppError("Error fetching users", 400);
+    }
+    this.logger.log("Users fetched", users);
+    return users;
+  }
+
+
 
 
   // clear testing data 
    // clear test data
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async clearTestData() {
     this.logger.log("Clearing test data");
     const [deleteError, deleteResult] = await goTry(() =>

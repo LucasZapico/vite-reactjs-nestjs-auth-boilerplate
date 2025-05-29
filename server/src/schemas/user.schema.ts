@@ -35,8 +35,7 @@ export class User {
   @Prop({default: Date.now})
   updatedAt: Date;
 
-  @Prop()
-  tags?: string[];
+
 
 }
 

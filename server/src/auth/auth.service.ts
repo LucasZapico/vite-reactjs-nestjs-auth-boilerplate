@@ -31,25 +31,34 @@ export class AuthService {
   }
 
   // refresh tokens
-  async refreshTokens(userId: string, refreshToken: string) {
-    this.logger.log("refreshTokens", userId, refreshToken);
-    const user = await this.usersService.findUser({ where: { id: userId } });
+  async refreshTokens(email: string, refreshToken: string) {
+    this.logger.log("refreshTokens", email, refreshToken);
+    const [userExistsError, user] = await goTry(() => {
+      return this.usersService.findUser({ email: email });
+    });
+
+    this.logger.log("User found", user);
+
+    if (userExistsError) {
+      this.logger.error("Error finding user", userExistsError);
+      throw new UnauthorizedException("Invalid Credentials");
+    }
+    
     if (!user || !user.refreshToken) {
-      this.logger.log("AuthService: refreshTokens: user found", user);
+      this.logger.error("AuthService: refreshTokens: user found", user);
       throw new ForbiddenException("Access Denied");
     }
 
     // verify the refresh token
     this.logger.log("refresh token", refreshToken);
-    this.logger.log("user refresh token", user.refreshToken);
-    const hashedRefreshToken = user.refreshToken;
-    const refreshTokenMatches = await argon2.verify(
-      hashedRefreshToken,
-      refreshToken,
-    );
+    this.logger.log("user refresh token", user.refreshToken, refreshToken);
+    // const hashedRefreshToken = refreshToken as string
+    // const refreshTokenMatches = await argon2.verify(
+    //   hashedRefreshToken,
+    //   user.refreshToken,
+    // );
 
-    this.logger.log("refresh token matches", refreshTokenMatches);
-    if (!refreshTokenMatches) throw new ForbiddenException("Access Denied");
+    // if (!refreshTokenMatches) throw new ForbiddenException("Access Denied");
     const tokens = await this.getTokens({
       sub: user.id,
       email: user.email,
@@ -65,21 +74,21 @@ export class AuthService {
    */
   async updateToken(email: string, tokens: any) {
     // TODO: does this need gotry
-    const hashedRefreshToken = await this.hashData(tokens.refreshToken);
-    const hashedAccessToken = await this.hashData(tokens.accessToken);
+    // const hashedRefreshToken = await this.hashData(tokens.refreshToken);
+    // const hashedAccessToken = await this.hashData(tokens.accessToken);
     // const hashedRefreshToken = refreshToken;
-    this.logger.log(
-      "AuthService: updateRefreshToken: hashed refresh token",
-      hashedRefreshToken,
-    );
+    // this.logger.log(
+    //   "AuthService: updateRefreshToken: hashed refresh token",
+    //   hashedRefreshToken,
+    // );
     await this.usersService.updateUser({
       query: {
         email: email,
       },
       data: {
         $set: {
-          refreshToken: hashedRefreshToken,
-          accessToken: hashedAccessToken,
+          refreshToken: tokens.refreshToken,
+          accessToken: tokens.accessToken,
         },
       },
     });
@@ -134,30 +143,48 @@ export class AuthService {
    */
   async login(userDto: LoginDto) {
     this.logger.log("User logged in");
-    // Logic for user login
-    // hash password
-    const [hashError, hashedPassword] = await goTry(() => {
-      return this.hashData(userDto.password);
+    const [userExistsError, user] = await goTry(() => {
+      return this.usersService.findUser({ email: userDto.email });
     });
-    // check if user exists
 
-    if (hashError) {
-      this.logger.error("Error hashing password", hashError);
-      throw new UnauthorizedException("Invalids Credentials");
+    this.logger.log("User found", user);
+
+    if (userExistsError) {
+      this.logger.error("Error finding user", userExistsError);
+      throw new UnauthorizedException("Invalid Credentials");
     }
-    // create user
-    const user = await this.usersService.createUser(userDto);
+    if (!user) {
+      this.logger.error("User does not exist");
+      throw new UnauthorizedException("Invalid Credentials");
+    }
 
-    // const tokenPayload = {
-    //   sub: user._id,
-    //   email: user.email,
-    //   username: user.username,
-    //   role: user.role || "USER"
-    // }
+    // validate password
+    const [passwordError] = await goTry(() => {
+      if (!user.password) {
+        this.logger.error("AuthService: login: password not found");
+        throw new UnauthorizedException("Invalid credentials");
+      }
+      const crtPw = user.password;
+      return argon2.verify(crtPw, userDto.password);
+    });
+
+    if (passwordError) {
+      this.logger.error("AuthService: login: password error", passwordError);
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
+    return user;
   }
   /**
    * LOGOUT
    */
+  async logout(userDto: LoginDto) {
+    return this.usersService.updateUser({
+      query: { email: userDto.email },
+      data: { refreshToken: null },
+    });
+  }
+
   /**
    * SIGNUP
    */
@@ -226,6 +253,6 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    return {user, ...tokens};
+    return { user, ...tokens };
   }
 }
