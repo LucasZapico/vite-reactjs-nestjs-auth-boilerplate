@@ -1,0 +1,22 @@
+meta {
+  name: get-user
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/users/profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+     "username": "testuser",
+     "email": "testuser985@example.com"
+  }
+}
