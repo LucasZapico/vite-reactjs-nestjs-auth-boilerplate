@@ -12,8 +12,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({
     enableDebugMessages: true,
-    
-
   }))
 
   const logger = new Logger("Bootstrap");
