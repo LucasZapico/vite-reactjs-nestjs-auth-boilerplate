@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
-export const LoginPage = () => {
+export const Login = () => {
   const [state, setState] = useState<any>(null)
   const mutation = useMutation({
     mutationFn: async (data: any) => {
@@ -29,11 +29,8 @@ export const LoginPage = () => {
     mutation.mutate(data);
     // Handle login logic here, e.g., API call
   };
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-4xl font-bold">Login</h1>
-      <form
+    <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-4 w-full max-w-sm mt-4"
       >
@@ -69,6 +66,16 @@ export const LoginPage = () => {
         )}
         {/* TODO: loading */}
       </form>
+  )
+}
+
+export const LoginPage = () => {
+  
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <h1 className="text-4xl font-bold">Login</h1>
+      <Login/>
     </div>
   );
 };
