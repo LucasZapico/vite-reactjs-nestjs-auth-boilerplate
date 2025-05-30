@@ -9,9 +9,11 @@ import { logInfo } from "@/utils/logger";
 interface AdaptAxiosRequestConfig extends InternalAxiosRequestConfig {
   headers: AxiosRequestHeaders;
 }
+const PRIME_URL = import.meta.env.VITE_PRIME_API_URL;
+
 
 export const PrimeApi: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_PRIME_API_URL,
+  baseURL: PRIME_URL,
   timeout: 10000, // 10 seconds timeout
 });
 

@@ -7,6 +7,7 @@ import {
   TermOfServicePage,
   FooPage,
   SignupPage,
+  LandingPage
 } from "@/pages";
 import { AppLayout, BaseLayout } from "@/components";
 
@@ -16,15 +17,16 @@ export const RouteWrapper = () => {
     <Routes>
       <Route element={<AppLayout />}>
         
-        <Route index element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
         {/* <Route path="/profile" element={<ProfilePage />} /> */}
         {process.env.NODE_ENV !== "production" ? (<Route path="/foo" element={<FooPage/>}/>): <></>}
         
       </Route>
 
       <Route element={<BaseLayout />}>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route index element={<LandingPage />} />
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/signup" element={<SignupPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermOfServicePage />} />
         {/* <Route path="register" element={<Register />} /> */}
