@@ -15,7 +15,7 @@ export const PrimeApi: AxiosInstance = axios.create({
   timeout: 10000, // 10 seconds timeout
 });
 
-log
+
 
 PrimeApi.interceptors.request.use((config) => {
   if (config) {
