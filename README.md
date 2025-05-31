@@ -8,11 +8,13 @@
 - [x] dockerize
 - [] db
   - [ ] postgres
-  - [ ] mongo
+  - [x] mongo
+- auth
+  - Oauth
 
 ## client 
 
 - [] dockerize
-- [] auth 
+- [x] auth 
   - [] social 
 
