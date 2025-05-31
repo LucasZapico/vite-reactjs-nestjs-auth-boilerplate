@@ -77,7 +77,7 @@ export const BaseLayout = ({ children }: { children?: React.ReactNode }) => {
           <h1 className="text-2xl font-bold">My Application</h1>
           <div className="flex space-x-4">
             {!user ? (
-              <div>
+              <div className="flex space-x-2">
                 <Button variant="default">
                   <Link to="/auth/signup">Signup</Link>
                 </Button>
@@ -101,7 +101,10 @@ export const BaseLayout = ({ children }: { children?: React.ReactNode }) => {
 
             <Button
               variant={"secondary"}
-              onClick={() => setMode(mode === "light" ? "dark" : "light")}
+              onClick={() => {
+                setMode(mode === "light" ? "dark" : "light")
+                document.documentElement.classList.toggle("dark");
+              }}
             >
               {mode === "light" ? <FaMoon /> : <FaSun />}
             </Button>
