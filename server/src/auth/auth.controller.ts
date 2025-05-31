@@ -34,7 +34,6 @@ export class AuthController {
     return this.authService.signUp(user);
   }
 
-  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Post("login")
   async login(@Body() loginDto: LoginDto) {

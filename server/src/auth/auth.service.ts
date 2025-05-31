@@ -151,11 +151,11 @@ export class AuthService {
 
     if (userExistsError) {
       this.logger.error("Error finding user", userExistsError);
-      throw new UnauthorizedException("Invalid Credentials");
+      throw new UnauthorizedException("Error finding user");
     }
     if (!user) {
       this.logger.error("User does not exist");
-      throw new UnauthorizedException("Invalid Credentials");
+      throw new UnauthorizedException("User does not exist");
     }
 
     // validate password
@@ -173,15 +173,54 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    return user;
+     const tokenPayload = {
+      sub: user._id,
+      email: user.email,
+      username: user.username,
+      role: user.role || "USER",
+    } as any;
+
+    const [tokenErr, tokens] = await goTry(() => {
+      return this.getTokens(tokenPayload);
+    });
+    if (tokenErr) {
+      this.logger.error("AuthService: signup: token error", tokenErr);
+      throw new UnauthorizedException("Invalid credentials");
+    }
+    const [updateRefreshToeknErr] = await goTry(() => {
+      return this.updateToken(user.email, tokens);
+    });
+    if (updateRefreshToeknErr) {
+      this.logger.error(
+        "signup: update refresh token error",
+        updateRefreshToeknErr,
+      );
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
+    return { user, ...tokens };
   }
   /**
    * LOGOUT
    */
   async logout(userDto: LoginDto) {
+    const [userExistsError, user] = await goTry(() => {
+      return this.usersService.findUser({ email: userDto.email });
+    });
+
+    this.logger.log("User found", user);
+
+    if (userExistsError) {
+      this.logger.error("Error finding user", userExistsError);
+      throw new UnauthorizedException("Error finding user");
+    }
+    if (!user) {
+      this.logger.error("User does not exist");
+      throw new UnauthorizedException("User does not exist");
+    }
     return this.usersService.updateUser({
       query: { email: userDto.email },
-      data: { refreshToken: null },
+      data: { refreshToken: null, accessToken: null },
     });
   }
 
