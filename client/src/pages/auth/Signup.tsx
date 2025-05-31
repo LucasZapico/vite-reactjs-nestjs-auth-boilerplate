@@ -27,13 +27,13 @@ export const Signup = () => {
       });
     },
     onError: (error: any) => {
-      logError("Login error", error);
+      logError("Signup error", error);
     },
     onSuccess: (data: any) => {
-      logInfo("Login success", data);
+      logInfo("Signup success", data);
       setState(data);
-      Cookie.set("blue_monkey_user", JSON.stringify(data));
-      setUser({ ...data });
+      // Cookie.set("blue_monkey_user", JSON.stringify(data));
+      setUser({ ...data.user, accessToken: data.accessToken, refreshToken: data.refreshToken });
       navigate('/home')
     },
   });
