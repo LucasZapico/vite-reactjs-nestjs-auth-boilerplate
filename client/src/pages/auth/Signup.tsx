@@ -17,7 +17,6 @@ import { Link, useNavigate } from "react-router";
 export const Signup = () => {
   const navigate = useNavigate()
   const [user, setUser] = useAtom(userAtom);
-  const [state, setState] = useState<any>(null);
   const mutation = useMutation({
     mutationFn: async (data: any) => {
       return await PrimeApi({
@@ -31,7 +30,7 @@ export const Signup = () => {
     },
     onSuccess: (data: any) => {
       logInfo("Signup success", data);
-      setState(data);
+     
       // Cookie.set("blue_monkey_user", JSON.stringify(data));
       setUser({ ...data.user, accessToken: data.accessToken, refreshToken: data.refreshToken });
       navigate('/home')
