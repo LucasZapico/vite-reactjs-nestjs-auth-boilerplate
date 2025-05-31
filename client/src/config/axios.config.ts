@@ -33,6 +33,7 @@ export const addBearerToken = (
   axiosInstance: AxiosInstance,
   accessToken: string
 ) => {
+  logInfo("Adding Bearer Token to Axios Instance", accessToken);
   axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
       if (config && config.headers) {
